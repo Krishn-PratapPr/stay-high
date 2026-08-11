@@ -12,7 +12,9 @@ import {
   Volume2, 
   VolumeX, 
   Music,
-  Compass
+  Compass,
+  Menu,
+  X
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -67,6 +69,7 @@ export default function Home() {
   const [mounted, setMounted] = useState<boolean>(false);
   const [currentTimeStr, setCurrentTimeStr] = useState<string>("");
   const [onlineCount, setOnlineCount] = useState<number>(18); // Realistic initial count between 12 and 28
+  const [isPlaylistOpen, setIsPlaylistOpen] = useState<boolean>(false);
 
   const playerRef = useRef<any>(null);
 
@@ -266,26 +269,37 @@ export default function Home() {
       {mounted && (
         <>
           {/* Top Left Group: Contact Developer & Online Counter */}
-          <div className="absolute top-4 left-4 flex items-center gap-3 z-50">
+          <div className="absolute top-4 left-4 flex flex-col sm:flex-row items-start sm:items-center gap-1.5 sm:gap-3 z-50">
             <a
               href={INSTAGRAM_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-[#e0e5d5] bg-black/40 hover:bg-black/60 px-3 py-1.5 rounded-full border border-[#e0e5d5]/20 transition-all backdrop-blur-sm flex items-center gap-2 cursor-pointer"
+              className="text-[9px] xs:text-[10px] md:text-xs text-[#e0e5d5] bg-black/40 hover:bg-black/60 px-2 py-1 md:px-3 md:py-1.5 rounded-full border border-[#e0e5d5]/20 transition-all backdrop-blur-sm flex items-center gap-1.5 cursor-pointer"
             >
               <InstagramIcon />
               <span>Contact Developer</span>
             </a>
             
-            <div className="text-xs text-[#e0e5d5]/90 bg-black/40 px-3 py-1.5 rounded-full border border-[#e0e5d5]/20 backdrop-blur-sm font-mono flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div className="text-[9px] xs:text-[10px] md:text-xs text-[#e0e5d5]/90 bg-black/40 px-2 py-1 md:px-3 md:py-1.5 rounded-full border border-[#e0e5d5]/20 backdrop-blur-sm font-mono flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 xs:w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <span>Online: {onlineCount}</span>
             </div>
           </div>
 
           {/* Top Middle — Live Digital Clock */}
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 text-xs md:text-sm text-[#e0e5d5]/80 font-mono tracking-widest bg-black/30 backdrop-blur-sm px-3 py-1 rounded-full border border-[#e0e5d5]/20">
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 text-[10px] xs:text-[11px] md:text-sm text-[#e0e5d5]/80 font-mono tracking-widest bg-black/30 backdrop-blur-sm px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full border border-[#e0e5d5]/20">
             {currentTimeStr}
+          </div>
+
+          {/* Top Right Group: Toggle Playlist Button (visible only on mobile) */}
+          <div className="absolute top-4 right-4 z-50 md:hidden">
+            <button
+              onClick={() => setIsPlaylistOpen(true)}
+              className="bg-black/50 border border-[#e0e5d5]/20 text-[#e0e5d5] px-2.5 py-1 rounded-full text-[10px] xs:text-xs transition-all backdrop-blur-sm flex items-center gap-1 cursor-pointer active:scale-95"
+            >
+              <Menu className="w-3 h-3 xs:w-3.5 xs:h-3.5" />
+              <span>Playlist</span>
+            </button>
           </div>
         </>
       )}
@@ -318,6 +332,84 @@ export default function Home() {
         )}
       </div>
 
+      {/* Mobile Slide-over Playlist Drawer */}
+      <div className={`fixed inset-y-0 right-0 z-50 w-full sm:w-80 bg-[#141C14]/95 backdrop-blur-md p-6 border-l border-[#e0e5d5]/20 transition-transform duration-300 transform md:hidden ${
+        isPlaylistOpen ? "translate-x-0" : "translate-x-full"
+      }`}>
+        <div className="flex items-center justify-between border-b border-forest-secondary/40 pb-3 mb-4 flex-shrink-0">
+          <div className="flex items-center gap-1.5 font-serif text-xs text-zinc-300 tracking-widest font-semibold uppercase">
+            <Music className="w-3.5 h-3.5 text-gold-khaki/70" />
+            <span>Curated Sessions</span>
+          </div>
+          <button 
+            onClick={() => setIsPlaylistOpen(false)}
+            className="p-1 text-zinc-400 hover:text-white rounded-full transition-colors cursor-pointer"
+            title="Close Playlist"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Scrollable playlist inside drawer */}
+        <div className="flex-1 overflow-y-auto space-y-1 h-[calc(100vh-100px)]">
+          {tracks.map((track, index) => {
+            const isActive = track.id === activeTrack.id;
+            return (
+              <button
+                key={track.id}
+                onClick={() => {
+                  selectTrack(index);
+                  setIsPlaylistOpen(false);
+                }}
+                className={`w-full flex items-center justify-between p-2 rounded-lg text-left transition-all duration-300 group border border-transparent ${
+                  isActive
+                    ? "bg-forest-secondary/60 text-gold-khaki border-forest-secondary/50 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]"
+                    : "text-zinc-400 hover:text-zinc-200 hover:bg-forest-secondary/20"
+                }`}
+              >
+                <div className="flex items-center min-w-0">
+                  <div className="w-8 h-8 rounded relative overflow-hidden flex-shrink-0 mr-2 border border-forest-secondary">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={track.artwork_url}
+                      alt={track.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+
+                  <div className="min-w-0">
+                    <p className={`text-[11px] font-medium truncate ${
+                      isActive ? "text-gold-khaki" : "text-zinc-300 group-hover:text-white"
+                    }`}>
+                      {track.title}
+                    </p>
+                    <p className="text-[8px] text-zinc-500 group-hover:text-zinc-400 mt-0.5 truncate uppercase tracking-wider">
+                      {track.artist}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-center w-3.5 h-3.5 flex-shrink-0 select-none">
+                  {isActive && isPlaying ? (
+                    <div className="flex items-end gap-[2px] h-2.5">
+                      <span className="w-[1.5px] h-1.5 bg-gold-khaki rounded-full origin-bottom animate-wave-1"></span>
+                      <span className="w-[1.5px] h-2.5 bg-gold-khaki rounded-full origin-bottom animate-wave-2"></span>
+                      <span className="w-[1.5px] h-1.5 bg-gold-khaki rounded-full origin-bottom animate-wave-3"></span>
+                    </div>
+                  ) : isActive && !isPlaying ? (
+                    <Play className="w-2 h-2 text-gold-khaki/80 fill-current translate-x-[0.5px]" />
+                  ) : (
+                    <span className="text-[9.5px] text-zinc-600 group-hover:text-gold-khaki/50 transition-colors">
+                      {index < 9 ? `0${index + 1}` : index + 1}
+                    </span>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Main Workspace: top area flex row + bottom playbar */}
       <div className="w-full flex-1 flex flex-col justify-between min-h-0 gap-3 sm:gap-4">
         
@@ -336,8 +428,8 @@ export default function Home() {
             </header>
           </div>
 
-          {/* Top-Right: Curated Sessions Playlist (tall and narrow) */}
-          <section className="w-56 sm:w-60 md:w-64 bg-forest-dark/30 border border-forest-secondary/40 rounded-xl p-2.5 backdrop-blur-md shadow-2xl flex flex-col overflow-hidden h-full flex-shrink-0">
+          {/* Top-Right: Curated Sessions Playlist (tall and narrow, desktop only) */}
+          <section className="hidden md:flex w-56 sm:w-60 md:w-64 bg-forest-dark/30 border border-forest-secondary/40 rounded-xl p-2.5 backdrop-blur-md shadow-2xl flex-col overflow-hidden h-full flex-shrink-0">
             <div className="flex items-center justify-between border-b border-forest-secondary/40 pb-1.5 px-0.5 flex-shrink-0">
               <div className="flex items-center gap-1 font-serif text-[9px] text-zinc-400 tracking-widest font-semibold uppercase">
                 <Music className="w-3 h-3 text-gold-khaki/70" />
@@ -414,7 +506,7 @@ export default function Home() {
             {/* Left Column: Spinning Vinyl Record Disc */}
             <div className="relative flex-shrink-0 flex items-center justify-center">
               <div 
-                className="relative w-20 h-20 sm:w-24 sm:h-24 aspect-square rounded-full bg-[#0a0f0a] border border-forest-secondary shadow-[0_10px_30px_rgba(0,0,0,0.7)] flex items-center justify-center overflow-hidden cursor-pointer active:scale-98 transition-transform duration-300"
+                className="relative w-14 h-14 xs:w-18 xs:h-18 sm:w-24 sm:h-24 md:w-28 md:h-28 aspect-square rounded-full bg-[#0a0f0a] border border-forest-secondary shadow-[0_10px_30px_rgba(0,0,0,0.7)] flex items-center justify-center overflow-hidden cursor-pointer active:scale-98 transition-transform duration-300"
                 onClick={togglePlay}
               >
                 <div 
@@ -450,7 +542,7 @@ export default function Home() {
             <div className="flex-1 flex flex-col justify-center min-w-0">
               
               {/* Metadata & Media Controls on a single row to save vertical height */}
-              <div className="w-full flex flex-row items-center justify-between min-w-0 gap-4">
+              <div className="w-full flex flex-row items-center justify-between min-w-0 gap-2 xs:gap-4">
                 {/* Currently Playing Metadata */}
                 <div className="text-left flex-shrink-0 flex flex-col justify-center max-w-[50%]">
                   <AnimatePresence mode="wait">
@@ -462,10 +554,10 @@ export default function Home() {
                         exit={{ opacity: 0, y: -3 }}
                         transition={{ duration: 0.15 }}
                       >
-                        <h2 className="font-serif text-sm sm:text-base font-medium tracking-wide text-gold-khaki truncate max-w-full drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+                        <h2 className="font-serif text-[10px] xs:text-xs sm:text-sm md:text-base font-medium tracking-wide text-gold-khaki truncate max-w-[90px] xs:max-w-[150px] sm:max-w-[220px] md:max-w-xs drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
                           {activeTrack.title}
                         </h2>
-                        <h3 className="font-sans text-[8px] sm:text-[9px] tracking-widest text-zinc-400 mt-0.5 uppercase truncate">
+                        <h3 className="font-sans text-[7.5px] xs:text-[8px] sm:text-[9px] tracking-widest text-zinc-400 mt-0.5 uppercase truncate">
                           {activeTrack.artist}
                         </h3>
                       </motion.div>
@@ -474,7 +566,7 @@ export default function Home() {
                 </div>
 
                 {/* Media Action Controls */}
-                <div className="flex items-center justify-end gap-3 flex-shrink-0">
+                <div className="flex items-center justify-end gap-1.5 xs:gap-2.5 sm:gap-3 flex-shrink-0">
                   {/* Shuffle */}
                   <button
                     onClick={() => setIsShuffle(!isShuffle)}
@@ -483,7 +575,7 @@ export default function Home() {
                     }`}
                     title="Shuffle"
                   >
-                    <Shuffle className="w-3.5 h-3.5" />
+                    <Shuffle className="w-3 h-3 xs:w-3.5 xs:h-3.5" />
                     {isShuffle && (
                       <span className="absolute bottom-0 w-0.5 h-0.5 rounded-full bg-gold-khaki" />
                     )}
@@ -492,32 +584,32 @@ export default function Home() {
                   {/* Skip Previous */}
                   <button
                     onClick={handlePrev}
-                    className="p-1 rounded-full text-zinc-400 hover:text-white transition-colors"
+                    className="p-1 text-zinc-400 hover:text-white transition-colors"
                     title="Previous"
                   >
-                    <SkipBack className="w-4 h-4 fill-current" />
+                    <SkipBack className="w-3.5 h-3.5 xs:w-4 xs:h-4 fill-current" />
                   </button>
 
                   {/* Play/Pause Button */}
                   <button
                     onClick={togglePlay}
-                    className="w-9 h-9 rounded-full bg-forest-secondary border border-gold-khaki/20 text-gold-khaki hover:text-white hover:bg-gold-khaki/10 flex items-center justify-center transition-all duration-300 transform active:scale-95 shadow-[0_0_10px_rgba(224,122,47,0.06)]"
+                    className="w-7 h-7 xs:w-8 xs:h-8 sm:w-9 sm:h-9 rounded-full bg-forest-secondary border border-gold-khaki/20 text-gold-khaki hover:text-white hover:bg-gold-khaki/10 flex items-center justify-center transition-all duration-300 transform active:scale-95 shadow-[0_0_10px_rgba(224,122,47,0.06)]"
                     title={isPlaying ? "Pause" : "Play"}
                   >
                     {isPlaying ? (
-                      <Pause className="w-3.5 h-3.5 fill-current" />
+                      <Pause className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 fill-current" />
                     ) : (
-                      <Play className="w-3.5 h-3.5 fill-current translate-x-0.5" />
+                      <Play className="w-2.5 h-2.5 xs:w-3 xs:h-3 sm:w-3.5 sm:h-3.5 fill-current translate-x-0.5" />
                     )}
                   </button>
 
                   {/* Skip Next */}
                   <button
                     onClick={handleNext}
-                    className="p-1 rounded-full text-zinc-400 hover:text-white transition-colors"
+                    className="p-1 text-zinc-400 hover:text-white transition-colors"
                     title="Next"
                   >
-                    <SkipForward className="w-4 h-4 fill-current" />
+                    <SkipForward className="w-3.5 h-3.5 xs:w-4 xs:h-4 fill-current" />
                   </button>
 
                   {/* Repeat */}
@@ -580,7 +672,7 @@ export default function Home() {
                   step={0.01}
                   value={isMuted ? 0 : volume}
                   onChange={handleVolumeChange}
-                  className="w-12 sm:w-14 h-1 rounded-lg appearance-none cursor-pointer outline-none bg-forest-secondary accent-gold-khaki opacity-40 group-hover:opacity-100 transition-opacity duration-300"
+                  className="w-10 xs:w-12 sm:w-14 h-1 rounded-lg appearance-none cursor-pointer outline-none bg-forest-secondary accent-gold-khaki opacity-40 group-hover:opacity-100 transition-opacity duration-300"
                   style={{
                     background: `linear-gradient(to right, #d9c89b 0%, #d9c89b ${
                       (isMuted ? 0 : volume) * 100

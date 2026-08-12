@@ -14,7 +14,9 @@ import {
   Music,
   Compass,
   Menu,
-  X
+  X,
+  Maximize,
+  Minimize
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -70,6 +72,7 @@ export default function Home() {
   const [currentTimeStr, setCurrentTimeStr] = useState<string>("");
   const [onlineCount, setOnlineCount] = useState<number>(18); // Realistic initial count between 12 and 28
   const [isPlaylistOpen, setIsPlaylistOpen] = useState<boolean>(false);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   const playerRef = useRef<any>(null);
 
@@ -104,6 +107,17 @@ export default function Home() {
       });
     }, 15000);
     return () => clearInterval(intervalId);
+  }, []);
+
+  // Listen to fullscreen changes to keep UI button state in sync
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
   }, []);
 
   // Fetch playlist data once on mount
@@ -240,6 +254,23 @@ export default function Home() {
 
   const toggleMute = () => {
     setIsMuted(!isMuted);
+  };
+
+  const toggleFullscreen = async () => {
+    if (typeof document === "undefined") return;
+    try {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          await document.documentElement.requestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.error("Error attempting to toggle fullscreen:", err);
+    }
   };
 
   const formatTime = (timeInSeconds: number) => {
@@ -686,6 +717,23 @@ export default function Home() {
         </div>
 
       </div>
+
+      {/* Fullscreen Toggle Button */}
+      {mounted && (
+        <div className="absolute bottom-3 right-3 sm:bottom-4 sm:right-4 md:bottom-6 md:right-6 z-50">
+          <button
+            onClick={toggleFullscreen}
+            className="text-[#e0e5d5] bg-black/40 hover:bg-black/60 p-2 sm:p-2.5 rounded-full border border-[#e0e5d5]/20 transition-all backdrop-blur-sm flex items-center justify-center cursor-pointer active:scale-95 shadow-lg"
+            title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+          >
+            {isFullscreen ? (
+              <Minimize className="w-4 h-4" />
+            ) : (
+              <Maximize className="w-4 h-4" />
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

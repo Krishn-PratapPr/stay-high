@@ -1,36 +1,136 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌿 StayHigh (Trip Vibes)
 
-## Getting Started
+> **A Curated Playlist for the Hazy Moments**
 
-First, run the development server:
+StayHigh is a dark, atmospheric, vinyl-inspired web music player designed for immersive chillout sessions. Built with Next.js 16, React 19, and Tailwind CSS, it seamlessly streams curated YouTube playlists inside an elegant, tactile user interface featuring spinning vinyl aesthetics, dynamic soundwave animations, and customizable player controls.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## ✨ Features
+
+- 🎵 **Curated YouTube Playlist Integration**: Automatically fetches and parses track titles, channels, and high-resolution artwork from YouTube Data API v3.
+- 💿 **Spinning Vinyl Disc Aesthetics**: Realistic vinyl record artwork with grooved reflections and synchronized rotational playback animations.
+- 🎛️ **Full Media Playback Controls**:
+  - Play, Pause, Skip Next, Skip Previous
+  - Progress Timeline Slider with real-time seeking
+  - Shuffle and Repeat track modes
+  - Volume control slider & Mute toggle
+- ⌨️ **Keyboard Shortcuts**:
+  - `Space` : Play / Pause
+  - `←` (Left Arrow) : Previous track / Restart track
+  - `→` (Right Arrow) : Next track
+- 📜 **Interactive Playlist Drawer & Sidebar**:
+  - **Desktop**: Collapsible & expandable side menu with quick track selection.
+  - **Mobile**: Touch-friendly slide-over drawer menu.
+  - **Live Equalizer**: Animated soundwave indicator for the currently active track.
+- 🌌 **Atmospheric Design & Micro-animations**:
+  - Deep forest theme (`#141c14`) paired with khaki gold (`#d9c89b`) and resin glow highlights.
+  - SVG fractal noise background overlay & atmospheric vignette haze.
+  - Typography powered by Google Fonts (*Playfair Display* & *Inter*).
+- 🕒 **Live Utilities**:
+  - Real-time digital clock (12-hour format with AM/PM).
+  - Dynamic live online listener counter.
+  - Fullscreen toggle mode for zero-distraction listening.
+  - Direct developer contact link.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router)
+- **UI Core**: [React 19](https://react.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) & Vanilla CSS animations
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Icons**: [Lucide React](https://lucide.dev/)
+- **Audio Engine**: [React Player](https://github.com/cookpete/react-player) (YouTube integration)
+- **Typography**: `Playfair Display` & `Inter` via `next/font`
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js** (v18.x or higher recommended)
+- **npm**, **yarn**, **pnpm**, or **bun**
+- A **YouTube Data API v3 Key** (from Google Cloud Console)
+
+---
+
+### Environment Setup
+
+Create a `.env.local` file in the root directory of your project:
+
+```env
+YOUTUBE_API_KEY=your_youtube_api_key_here
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+> 💡 **Note**: Without a valid `YOUTUBE_API_KEY`, the application fallback route will error when attempting to fetch playlist items.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Installation
 
-## Learn More
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/Krishn-PratapPr/Stay-high.git
+   cd Stay-high
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. Install dependencies:
+   ```bash
+   npm install
+   # or
+   yarn install
+   # or
+   pnpm install
+   # or
+   bun install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Run the development server:
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   # or
+   pnpm dev
+   # or
+   bun dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to experience StayHigh.
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📂 Project Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+Trip vibes/
+├── src/
+│   └── app/
+│       ├── api/
+│       │   └── playlist/
+│       │       └── route.ts     # YouTube Playlist API endpoint proxy
+│       ├── globals.css          # Core styles, theme tokens, noise & animations
+│       ├── layout.tsx           # Main layout & font loading
+│       └── page.tsx             # Interactive player application UI
+├── public/                      # Static assets & theme artwork
+├── .env.local                   # Local environment configuration
+├── next.config.ts               # Next.js configuration
+├── package.json                 # Project dependencies & scripts
+└── tsconfig.json                # TypeScript configuration
+```
+
+---
+
+## 👤 Developer & Contact
+
+Created with ❤️ by **Krishna**.
+- **Instagram**: [@krishnaa_.98](https://www.instagram.com/krishnaa_.98)
+
+---
+
+## 📄 License
+
+This project is open-source under the [MIT License](LICENSE).
